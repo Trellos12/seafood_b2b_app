@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seafood_b2b_app/features/catalog/data/mock_data.dart';
 import 'package:seafood_b2b_app/features/catalog/data/category_model.dart';
+import 'package:seafood_b2b_app/features/catalog/screens/product_details_screen.dart'; // 👈 добавлен импорт
 
 final selectedCategoryProvider =
     StateProvider<Category>((ref) => mockCategories.first);
@@ -76,7 +77,7 @@ class CatalogScreen extends ConsumerWidget {
             ),
           ),
 
-          // Сетка товаров 2xN
+          // Сетка товаров 2xN с переходом по нажатию
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -90,33 +91,44 @@ class CatalogScreen extends ConsumerWidget {
                 ),
                 itemBuilder: (context, index) {
                   final product = filteredProducts[index];
-                  return Card(
-                    elevation: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          product.imageUrl,
-                          height: 100,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ProductDetailsScreen(product: product),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 4),
-                              Text('${product.price.toStringAsFixed(2)} €'),
-                            ],
+                      );
+                    },
+                    child: Card(
+                      elevation: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.network(
+                            product.imageUrl,
+                            height: 100,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  product.name,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 4),
+                                Text('${product.price.toStringAsFixed(2)} €'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
