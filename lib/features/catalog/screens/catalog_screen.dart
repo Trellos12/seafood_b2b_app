@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seafood_b2b_app/features/catalog/data/mock_data.dart';
 import 'package:seafood_b2b_app/features/catalog/data/category_model.dart';
-import 'package:seafood_b2b_app/features/catalog/screens/product_details_screen.dart'; // 👈 добавлен импорт
+import 'package:seafood_b2b_app/features/catalog/screens/product_details_screen.dart';
+import 'package:seafood_b2b_app/widgets/cart_button.dart'; // ✅ добавили CartButton
 
 final selectedCategoryProvider =
     StateProvider<Category>((ref) => mockCategories.first);
@@ -17,11 +18,16 @@ class CatalogScreen extends ConsumerWidget {
         mockProducts.where((p) => p.categoryId == selectedCategory.id).toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Каталог')),
+      appBar: AppBar(
+        title: const Text('Каталог'),
+        actions: const [
+          CartButton(), // ✅ кнопка корзины
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Горизонтальная карусель категорий (2.5 карточки в ширину)
+          // ✅ Горизонтальная карусель категорий
           SizedBox(
             height: 100,
             child: ListView.builder(
@@ -68,7 +74,7 @@ class CatalogScreen extends ConsumerWidget {
             ),
           ),
 
-          // Название категории и описание
+          // ✅ Название категории
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
@@ -77,7 +83,7 @@ class CatalogScreen extends ConsumerWidget {
             ),
           ),
 
-          // Сетка товаров 2xN с переходом по нажатию
+          // ✅ Сетка товаров
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),

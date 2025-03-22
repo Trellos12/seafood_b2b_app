@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seafood_b2b_app/features/catalog/data/product_model.dart';
+import 'package:seafood_b2b_app/features/cart/data/cart_provider.dart';
+import 'package:seafood_b2b_app/features/cart/data/cart_item_model.dart';
+import 'package:seafood_b2b_app/widgets/cart_button.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+class ProductDetailsScreen extends ConsumerWidget {
   final Product product;
 
   const ProductDetailsScreen({super.key, required this.product});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text(product.name)),
+      appBar: AppBar(
+        title: Text(product.name),
+        actions: const [CartButton()],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -41,7 +48,16 @@ class ProductDetailsScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // пока ничего
+                  ref.read(cartProvider.notifier).addToCart(
+                        CartItem(product: product),
+                      );
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${product.name} добавлен в корзину'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 },
                 child: const Text('Купить'),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
+import 'package:seafood_b2b_app/widgets/cart_button.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -11,7 +12,12 @@ class HomeScreen extends ConsumerWidget {
     final user = ref.watch(userProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Главная')),
+      appBar: AppBar(
+        title: const Text('Главная'),
+        actions: const [
+          CartButton(),
+        ],
+      ),
       body: Center(
         child: user == null
             ? const Text('Пользователь не найден')
