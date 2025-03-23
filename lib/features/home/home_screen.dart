@@ -29,6 +29,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final prefs = await SharedPreferences.getInstance();
     final hasCart = prefs.getString('cart_items') != null;
 
+    if (!mounted) return; // ✅ добавлено
+
     if (hasCart) {
       final snackBar = SnackBar(
         content: const Text('Обнаружена сохранённая корзина'),

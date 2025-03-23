@@ -6,12 +6,16 @@ class OrderConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false, // 🔒 Блокируем "назад"
+    return PopScope(
+      canPop: false, // 🚫 Запрещаем назад
+      onPopInvoked: (didPop) {
+        // Здесь можно логировать, например:
+        debugPrint('Попытка выйти с экрана подтверждения заказа: $didPop');
+      },
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false, // 🔒 Убираем стрелку "назад"
-          title: const Text('Заказ оформлен'),
+          title: const Text('Подтверждение заказа'),
+          automaticallyImplyLeading: false, // ❌ Скрываем стрелку "назад"
         ),
         body: Center(
           child: Padding(
@@ -19,12 +23,18 @@ class OrderConfirmationScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle_outline,
-                    size: 100, color: Colors.green),
+                const Icon(
+                  Icons.check_circle_outline,
+                  size: 100,
+                  color: Colors.green,
+                ),
                 const SizedBox(height: 24),
                 const Text(
                   'Спасибо за заказ!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 const Text(
@@ -39,7 +49,9 @@ class OrderConfirmationScreen extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 16),
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
                   ),
                   child: const Text(
                     'На главную',
