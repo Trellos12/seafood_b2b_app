@@ -16,7 +16,10 @@ class CartScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Корзина')),
+      appBar: AppBar(
+        title: const Text('Корзина'),
+        // ❌ Убрали кнопку очистки SharedPreferences
+      ),
       body: cartItems.isEmpty
           ? const Center(child: Text('Корзина пуста'))
           : Column(
@@ -71,6 +74,8 @@ class CartScreen extends ConsumerWidget {
                     },
                   ),
                 ),
+
+                // 💰 Итоговая сумма
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -90,6 +95,8 @@ class CartScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
+
+                // 🛒 Кнопка оформления
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: SizedBox(

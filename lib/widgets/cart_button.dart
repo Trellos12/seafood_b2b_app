@@ -8,7 +8,10 @@ class CartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.shopping_cart),
-      onPressed: () => context.go('/cart'),
+      onPressed: () {
+        // ❌ Убедись, что здесь нет вызова clearStorage()
+        context.go('/cart'); // ✅ просто переходим на экран корзины
+      },
     );
   }
 }

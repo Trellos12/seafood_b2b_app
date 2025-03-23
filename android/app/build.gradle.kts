@@ -9,6 +9,7 @@ android {
     namespace = "com.example.seafood_b2b_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973" // 👈 добавь эту строку
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
