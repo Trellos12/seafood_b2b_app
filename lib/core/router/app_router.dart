@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:seafood_b2b_app/features/auth/login_screen.dart';
 import 'package:seafood_b2b_app/features/home/home_screen.dart';
 import 'package:seafood_b2b_app/features/catalog/screens/catalog_screen.dart';
-import 'package:seafood_b2b_app/features/cart/screens/cart_screen.dart'; // 👈 добавлен импорт
+import 'package:seafood_b2b_app/features/cart/screens/cart_screen.dart';
+import 'package:seafood_b2b_app/features/cart/screens/order_confirmation_screen.dart'; // 👈 Добавили экран подтверждения
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -26,7 +27,11 @@ class AppRouter {
           ),
           GoRoute(
             path: '/cart',
-            builder: (context, state) => CartScreen(), // ❌ УБИРАЕМ const
+            builder: (context, state) => const CartScreen(),
+          ),
+          GoRoute(
+            path: '/order-confirmation',
+            builder: (context, state) => const OrderConfirmationScreen(),
           ),
         ],
       );

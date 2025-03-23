@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:seafood_b2b_app/features/cart/data/cart_provider.dart';
 
 class CartScreen extends ConsumerWidget {
@@ -9,7 +10,7 @@ class CartScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItems = ref.watch(cartProvider);
 
-    double total = cartItems.fold(
+    final total = cartItems.fold<double>(
       0,
       (sum, item) => sum + item.product.price * item.quantity,
     );
@@ -34,15 +35,37 @@ class CartScreen extends ConsumerWidget {
                         ),
                         title: Text(item.product.name),
                         subtitle: Text(
-                          '${item.quantity} × ${item.product.price.toStringAsFixed(2)} €',
+                          '${item.quantity} x ${item.product.price.toStringAsFixed(2)} €',
                         ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            ref
-                                .read(cartProvider.notifier)
-                                .removeFromCart(item.product.id);
-                          },
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () {
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .decreaseQuantity(item.product.id);
+                              },
+                            ),
+                            Text(item.quantity.toString()),
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () {
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .increaseQuantity(item.product.id);
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                ref
+                                    .read(cartProvider.notifier)
+                                    .removeFromCart(item.product.id);
+                              },
+                            ),
+                          ],
                         ),
                       );
                     },
@@ -54,12 +77,16 @@ class CartScreen extends ConsumerWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Итого:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text('${total.toStringAsFixed(2)} €',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Итого:',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        '${total.toStringAsFixed(2)} €',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
@@ -69,32 +96,8 @@ class CartScreen extends ConsumerWidget {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Подтверждение'),
-                            content: Text(
-                                'Оформить заказ на сумму ${total.toStringAsFixed(2)} €?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('Отмена'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  ref.read(cartProvider.notifier).clearCart();
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Заказ оформлен!'),
-                                    ),
-                                  );
-                                },
-                                child: const Text('Оформить'),
-                              ),
-                            ],
-                          ),
-                        );
+                        ref.read(cartProvider.notifier).clearCart();
+                        context.go('/order-confirmation');
                       },
                       child: const Text('Оформить заказ'),
                     ),
