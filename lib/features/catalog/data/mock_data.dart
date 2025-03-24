@@ -25,20 +25,20 @@ final mockProducts = [
     name: 'Лосось',
     imageUrl: 'https://picsum.photos/200?random=4',
     price: 19.99,
-    categoryId: 'fish',
+    categoryIds: ['fish'],
   ),
   Product(
     id: '2',
     name: 'Креветки тигровые',
     imageUrl: 'https://picsum.photos/200?random=5',
     price: 24.99,
-    categoryId: 'shrimp',
+    categoryIds: ['shrimp'],
   ),
   Product(
     id: '3',
     name: 'Осьминог baby',
     imageUrl: 'https://picsum.photos/200?random=6',
     price: 29.99,
-    categoryId: 'octopus',
+    categoryIds: ['octopus'],
   ),
 ];

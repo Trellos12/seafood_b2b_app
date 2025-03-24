@@ -1,144 +1,181 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seafood_b2b_app/features/catalog/data/mock_data.dart';
 import 'package:seafood_b2b_app/features/catalog/data/category_model.dart';
+import 'package:seafood_b2b_app/features/catalog/data/category_provider.dart';
+import 'package:seafood_b2b_app/features/catalog/data/product_provider.dart';
 import 'package:seafood_b2b_app/features/catalog/screens/product_details_screen.dart';
-import 'package:seafood_b2b_app/widgets/cart_button.dart'; // ✅ добавили CartButton
+import 'package:seafood_b2b_app/widgets/cart_button.dart';
 
-final selectedCategoryProvider =
-    StateProvider<Category>((ref) => mockCategories.first);
+final selectedCategoryProvider = StateProvider<Category?>((ref) => null);
 
 class CatalogScreen extends ConsumerWidget {
   const CatalogScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final categoriesAsync = ref.watch(categoryListProvider);
     final selectedCategory = ref.watch(selectedCategoryProvider);
-    final filteredProducts =
-        mockProducts.where((p) => p.categoryId == selectedCategory.id).toList();
+    final productsAsync = ref.watch(productListProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Каталог'),
-        actions: const [
-          CartButton(), // ✅ кнопка корзины
-        ],
+        actions: const [CartButton()],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ Горизонтальная карусель категорий
+          // 🔹 Категории
           SizedBox(
             height: 100,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: mockCategories.length,
-              itemBuilder: (context, index) {
-                final category = mockCategories[index];
-                final isSelected = category.id == selectedCategory.id;
+            child: categoriesAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Ошибка категорий: $e')),
+              data: (categories) {
+                if (categories.isEmpty) {
+                  return const Center(child: Text('Категории не найдены'));
+                }
 
-                return GestureDetector(
-                  onTap: () {
+                // 👇 Если ничего не выбрано — выбрать первую
+                if (selectedCategory == null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
                     ref.read(selectedCategoryProvider.notifier).state =
-                        category;
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: isSelected ? Colors.blue : Colors.grey,
-                        width: 2,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      color: isSelected ? Colors.blue[50] : Colors.white,
-                    ),
-                    child: Row(
-                      children: [
-                        Image.network(category.imageUrl, width: 40, height: 40),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            category.name,
-                            overflow: TextOverflow.ellipsis,
+                        categories.first;
+                  });
+                }
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    final isSelected = selectedCategory?.id == category.id;
+
+                    return GestureDetector(
+                      onTap: () {
+                        ref.read(selectedCategoryProvider.notifier).state =
+                            category;
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 12),
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected ? Colors.blue : Colors.grey,
+                            width: 2,
                           ),
+                          borderRadius: BorderRadius.circular(12),
+                          color: isSelected ? Colors.blue[50] : Colors.white,
                         ),
-                      ],
-                    ),
-                  ),
+                        child: Row(
+                          children: [
+                            Image.network(
+                              category.imageUrl,
+                              width: 40,
+                              height: 40,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.store),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                category.name,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
           ),
 
-          // ✅ Название категории
+          // 🔹 Заголовок категории
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
-              'Выбрана категория: ${selectedCategory.name}',
+              'Выбрана категория: ${selectedCategory?.name ?? "..."}',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
 
-          // ✅ Сетка товаров
+          // 🔹 Товары по категории
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: GridView.builder(
-                itemCount: filteredProducts.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3 / 4,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemBuilder: (context, index) {
-                  final product = filteredProducts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ProductDetailsScreen(product: product),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      elevation: 2,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Image.network(
-                            product.imageUrl,
-                            height: 100,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
+            child: productsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Ошибка загрузки: $e')),
+              data: (products) {
+                final filtered = selectedCategory == null
+                    ? []
+                    : products
+                        .where(
+                            (p) => p.categoryIds.contains(selectedCategory.id))
+                        .toList();
+
+                if (filtered.isEmpty) {
+                  return const Center(child: Text('Нет товаров в категории'));
+                }
+
+                return GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: filtered.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 3 / 4,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemBuilder: (context, index) {
+                    final product = filtered[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ProductDetailsScreen(product: product),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product.name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 4),
-                                Text('${product.price.toStringAsFixed(2)} €'),
-                              ],
+                        );
+                      },
+                      child: Card(
+                        elevation: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.network(
+                              product.imageUrl,
+                              height: 100,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.name,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text('${product.price.toStringAsFixed(2)} €'),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],

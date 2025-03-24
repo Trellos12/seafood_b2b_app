@@ -7,15 +7,14 @@ class OrderConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // 🚫 Запрещаем назад
+      canPop: false, // 🚫 Запрещаем выход назад
       onPopInvoked: (didPop) {
-        // Здесь можно логировать, например:
-        debugPrint('Попытка выйти с экрана подтверждения заказа: $didPop');
+        debugPrint('Попытка выйти с экрана подтверждения: $didPop');
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Подтверждение заказа'),
-          automaticallyImplyLeading: false, // ❌ Скрываем стрелку "назад"
+          automaticallyImplyLeading: false, // ❌ Скрываем кнопку "назад"
         ),
         body: Center(
           child: Padding(
@@ -45,7 +44,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: () {
-                    context.go('/home'); // ⬅️ Возврат на главный экран
+                    context.go('/home');
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(

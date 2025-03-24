@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
 import 'package:seafood_b2b_app/features/auth/login_screen.dart';
 import 'package:seafood_b2b_app/features/home/home_screen.dart';
 import 'package:seafood_b2b_app/features/catalog/screens/catalog_screen.dart';
 import 'package:seafood_b2b_app/features/cart/screens/cart_screen.dart';
 import 'package:seafood_b2b_app/features/cart/screens/order_confirmation_screen.dart';
-import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
   late final GoRouter config;
 
-  AppRouter() {
+  AppRouter(WidgetRef ref) {
     config = GoRouter(
       navigatorKey: _rootNavigatorKey,
       initialLocation: '/',
+      // ❗️ убираем refreshListenable — ты используешь StateProvider
       redirect: (context, state) {
+        // Мы не можем использовать ref здесь, поэтому читаем контейнер напрямую:
         final container = ProviderScope.containerOf(context, listen: false);
         final user = container.read(userProvider);
 
-        final isLoggingIn = state.uri.path == '/';
         final isLoggedIn = user != null;
+        final goingToLogin = state.uri.path == '/';
 
-        if (!isLoggedIn && !isLoggingIn) {
+        if (!isLoggedIn && !goingToLogin) {
           return '/';
         }
 
-        if (isLoggedIn && isLoggingIn) {
+        if (isLoggedIn && goingToLogin) {
           return '/home';
         }
 
