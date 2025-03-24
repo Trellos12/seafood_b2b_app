@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'cart_item_model.dart';
@@ -8,9 +9,7 @@ final cartProvider = StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {
 });
 
 class CartNotifier extends StateNotifier<List<CartItem>> {
-  CartNotifier() : super([]) {
-    _loadCartFromStorage();
-  }
+  CartNotifier() : super([]);
 
   static const _storageKey = 'cart_items';
 
@@ -28,11 +27,17 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
         final List decoded = jsonDecode(jsonString);
         state = decoded.map((item) => CartItem.fromJson(item)).toList();
       } catch (e) {
-        // Если повреждённые данные — сбросим
+        debugPrint('❌ Ошибка загрузки корзины: $e');
         state = [];
         await prefs.remove(_storageKey);
       }
     }
+  }
+
+  /// 🔄 Вызывается вручную из HomeScreen
+  Future<void> restoreFromStorage() async {
+    await _loadCartFromStorage();
+    await _saveCartToStorage(); // ⬅️ сохраняем восстановленную корзину
   }
 
   Future<void> clearStorage() async {
@@ -42,6 +47,8 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
   }
 
   void addToCart(CartItem item) {
+    debugPrint('🛒 Добавляем товар: ${item.product.name}');
+
     final index = state.indexWhere((e) => e.product.id == item.product.id);
     if (index == -1) {
       state = [...state, item];

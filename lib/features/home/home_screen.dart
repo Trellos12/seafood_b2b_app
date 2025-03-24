@@ -19,30 +19,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _showRestoreCartSnackbarOnce();
+    _showRestoreCartDialogOnce();
   }
 
-  Future<void> _showRestoreCartSnackbarOnce() async {
-    if (_restored) return; // Показываем только один раз
+  Future<void> _showRestoreCartDialogOnce() async {
+    if (_restored) return;
     _restored = true;
 
     final prefs = await SharedPreferences.getInstance();
-    final hasCart = prefs.getString('cart_items') != null;
+    final cartJson = prefs.getString('cart_items');
+    final hasCart = cartJson != null && cartJson != '[]';
 
-    if (!mounted) return; // ✅ добавлено
+    if (!mounted || !hasCart) return;
 
-    if (hasCart) {
-      final snackBar = SnackBar(
-        content: const Text('Обнаружена сохранённая корзина'),
-        action: SnackBarAction(
-          label: 'Очистить',
-          onPressed: () {
-            ref.read(cartProvider.notifier).clearCart();
-          },
-        ),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Сохранённая корзина'),
+        content: const Text('Хотите восстановить или очистить корзину?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              ref.read(cartProvider.notifier).restoreFromStorage();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Корзина восстановлена')),
+              );
+            },
+            child: const Text('Восстановить'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              prefs.remove('cart_items');
+              ref.read(cartProvider.notifier).clearCart();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Корзина очищена')),
+              );
+            },
+            child: const Text('Очистить'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -81,6 +100,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       context.go('/catalog');
                     },
                     child: const Text('Перейти в каталог'),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.read(userProvider.notifier).state = null;
+                      context.go('/');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text('Выйти'),
                   ),
                 ],
               ),
