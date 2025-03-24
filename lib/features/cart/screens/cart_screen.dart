@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:seafood_b2b_app/features/cart/data/cart_provider.dart';
+import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
+import 'package:seafood_b2b_app/features/checkout/data/order_repository.dart';
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -9,6 +11,7 @@ class CartScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartItems = ref.watch(cartProvider);
+    final user = ref.watch(userProvider);
 
     final total = cartItems.fold<double>(
       0,
@@ -16,10 +19,7 @@ class CartScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Корзина'),
-        // ❌ Убрали кнопку очистки SharedPreferences
-      ),
+      appBar: AppBar(title: const Text('Корзина')),
       body: cartItems.isEmpty
           ? const Center(child: Text('Корзина пуста'))
           : Column(
@@ -102,9 +102,31 @@ class CartScreen extends ConsumerWidget {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        ref.read(cartProvider.notifier).clearCart();
-                        context.go('/order-confirmation');
+                      onPressed: () async {
+                        if (user == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Вы не авторизованы')),
+                          );
+                          return;
+                        }
+
+                        final orderRepo = ref.read(orderRepositoryProvider);
+
+                        try {
+                          final orderId = await orderRepo.createOrder(
+                            items: cartItems,
+                            email: user.email,
+                          );
+
+                          ref.read(cartProvider.notifier).clearCart();
+                          context.go('/order-confirmation');
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Ошибка оформления заказа: $e'),
+                            ),
+                          );
+                        }
                       },
                       child: const Text('Оформить заказ'),
                     ),
