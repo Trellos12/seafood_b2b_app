@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
 import 'package:seafood_b2b_app/features/orders/data/order_provider.dart';
+import 'package:seafood_b2b_app/features/orders/screens/order_details_screen.dart'; // 👈 импорт экрана
 
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
@@ -45,6 +46,14 @@ class OrderHistoryScreen extends ConsumerWidget {
                   formattedDate,
                   style: const TextStyle(fontSize: 12),
                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => OrderDetailsScreen(order: order),
+                    ),
+                  );
+                },
               );
             },
           );
