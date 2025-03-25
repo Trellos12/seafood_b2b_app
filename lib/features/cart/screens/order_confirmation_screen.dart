@@ -7,14 +7,14 @@ class OrderConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // 🚫 Запрещаем выход назад
-      onPopInvoked: (didPop) {
+      canPop: false,
+      onPopInvoked: (bool didPop) {
         debugPrint('Попытка выйти с экрана подтверждения: $didPop');
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Подтверждение заказа'),
-          automaticallyImplyLeading: false, // ❌ Скрываем кнопку "назад"
+          automaticallyImplyLeading: false,
         ),
         body: Center(
           child: Padding(

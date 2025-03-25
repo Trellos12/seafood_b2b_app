@@ -104,6 +104,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
+                      context.go('/order-history');
+                    },
+                    child: const Text('История заказов'),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
                       ref.read(userProvider.notifier).state = null;
                       context.go('/');
                     },

@@ -7,6 +7,7 @@ import 'package:seafood_b2b_app/features/home/home_screen.dart';
 import 'package:seafood_b2b_app/features/catalog/screens/catalog_screen.dart';
 import 'package:seafood_b2b_app/features/cart/screens/cart_screen.dart';
 import 'package:seafood_b2b_app/features/cart/screens/order_confirmation_screen.dart';
+import 'package:seafood_b2b_app/features/orders/screens/order_history_screen.dart'; // ✅ не забудь
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -17,9 +18,7 @@ class AppRouter {
     config = GoRouter(
       navigatorKey: _rootNavigatorKey,
       initialLocation: '/',
-      // ❗️ убираем refreshListenable — ты используешь StateProvider
       redirect: (context, state) {
-        // Мы не можем использовать ref здесь, поэтому читаем контейнер напрямую:
         final container = ProviderScope.containerOf(context, listen: false);
         final user = container.read(userProvider);
 
@@ -56,6 +55,10 @@ class AppRouter {
         GoRoute(
           path: '/order-confirmation',
           builder: (context, state) => const OrderConfirmationScreen(),
+        ),
+        GoRoute(
+          path: '/order-history', // ✅ исправлено с /orders на /order-history
+          builder: (context, state) => const OrderHistoryScreen(),
         ),
       ],
     );
