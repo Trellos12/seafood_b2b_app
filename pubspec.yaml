@@ -27,6 +27,9 @@ dependencies:
   flutter_dotenv: ^5.2.1
   shimmer: ^3.0.0
   easy_localization: ^3.0.7+1
+  http: ^0.13.6
+  riverpod: any
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:

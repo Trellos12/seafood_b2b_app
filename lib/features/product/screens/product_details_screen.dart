@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seafood_b2b_app/features/catalog/data/product_model.dart';
-import 'package:seafood_b2b_app/features/cart/data/cart_provider.dart';
 import '../../../widgets/cart_button.dart';
 import '../widgets/product_image.dart';
 import '../widgets/product_price_text.dart';

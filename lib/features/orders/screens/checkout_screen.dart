@@ -166,6 +166,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             ),
                           );
                         } catch (e) {
+                          if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content:
@@ -173,7 +174,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                             ),
                           );
                         } finally {
-                          setState(() => _isSubmitting = false);
+                          if (mounted) {
+                            setState(() => _isSubmitting = false);
+                          }
                         }
                       },
                 child: const Text('Подтвердить заказ'),
