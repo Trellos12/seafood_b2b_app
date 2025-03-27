@@ -3,22 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
 import 'package:seafood_b2b_app/features/orders/data/order_provider.dart';
-import 'package:seafood_b2b_app/features/orders/screens/order_details_screen.dart'; // 👈 импорт экрана
+import 'package:seafood_b2b_app/features/orders/screens/order_details_screen.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final auth = ref.watch(authProvider);
 
-    if (user == null) {
+    if (!auth.isAuthenticated) {
       return const Scaffold(
         body: Center(child: Text('Пользователь не авторизован')),
       );
     }
 
-    final ordersAsync = ref.watch(orderListProvider(user.email));
+    // TODO: вытащить email из JWT или получать из API
+    final ordersAsync =
+        ref.watch(orderListProvider("test@b2b.com")); // временно
 
     return Scaffold(
       appBar: AppBar(title: const Text('Мои заказы')),
@@ -40,8 +42,9 @@ class OrderHistoryScreen extends ConsumerWidget {
 
               return ListTile(
                 title: Text('Заказ #${order.id}'),
-                subtitle:
-                    Text('Статус: ${order.status}\nСумма: ${order.total} €'),
+                subtitle: Text(
+                  'Статус: ${order.status}\nСумма: ${order.total} €',
+                ),
                 trailing: Text(
                   formattedDate,
                   style: const TextStyle(fontSize: 12),

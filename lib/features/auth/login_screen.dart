@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'data/user_model.dart';
 import 'data/user_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -15,6 +14,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -23,19 +23,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final email = _emailController.text.trim();
-      final isB2B = email.contains('b2b');
-      final role = isB2B ? UserRole.b2b : UserRole.b2c;
+  Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
-      final user = UserModel(email: email, role: role);
-      ref.read(userProvider.notifier).state = user;
+    setState(() => _loading = true);
 
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    final success =
+        await ref.read(authProvider.notifier).login(email, password);
+
+    if (!mounted) return;
+    setState(() => _loading = false);
+
+    if (success) {
       context.go('/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Пожалуйста, введите корректный email')),
+        const SnackBar(content: Text('Неверный логин или пароль')),
       );
     }
   }
@@ -75,8 +81,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _submit,
-                child: const Text('Войти'),
+                onPressed: _loading ? null : _submit,
+                child: _loading
+                    ? const CircularProgressIndicator()
+                    : const Text('Войти'),
               ),
             ],
           ),

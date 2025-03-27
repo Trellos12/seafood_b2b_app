@@ -24,4 +24,15 @@ class WooCommerceApi {
       throw Exception('Ошибка загрузки товаров: $e');
     }
   }
+
+  /// 🧾 Создание заказа
+  Future<Map<String, dynamic>> createOrder(
+      Map<String, dynamic> orderData) async {
+    try {
+      final response = await _dio.post('orders', data: orderData);
+      return response.data;
+    } catch (e) {
+      throw Exception('Ошибка оформления заказа: $e');
+    }
+  }
 }

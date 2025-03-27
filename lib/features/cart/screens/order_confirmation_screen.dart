@@ -8,7 +8,7 @@ class OrderConfirmationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         debugPrint('Попытка выйти с экрана подтверждения: $didPop');
       },
       child: Scaffold(
