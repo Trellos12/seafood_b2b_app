@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:seafood_b2b_app/features/catalog/data/category_model.dart';
 import 'package:seafood_b2b_app/features/catalog/data/category_provider.dart';
 import 'package:seafood_b2b_app/features/catalog/data/product_provider.dart';
-import 'package:seafood_b2b_app/features/catalog/screens/product_details_screen.dart';
+import 'package:seafood_b2b_app/features/product/screens/product_details_screen.dart';
 import 'package:seafood_b2b_app/widgets/cart_button.dart';
 
 final selectedCategoryProvider = StateProvider<Category?>((ref) => null);
@@ -36,7 +36,6 @@ class CatalogScreen extends ConsumerWidget {
                   return const Center(child: Text('Категории не найдены'));
                 }
 
-                // 👇 Если ничего не выбрано — выбрать первую
                 if (selectedCategory == null) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     ref.read(selectedCategoryProvider.notifier).state =
@@ -105,7 +104,7 @@ class CatalogScreen extends ConsumerWidget {
             ),
           ),
 
-          // 🔹 Товары по категории
+          // 🔹 Товары по выбранной категории
           Expanded(
             child: productsAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -148,11 +147,14 @@ class CatalogScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.network(
-                              product.imageUrl,
-                              height: 100,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
+                            Hero(
+                              tag: 'product-image-${product.id}',
+                              child: Image.network(
+                                product.imageUrl,
+                                height: 100,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
