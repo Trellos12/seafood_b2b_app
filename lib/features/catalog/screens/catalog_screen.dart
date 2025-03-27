@@ -5,6 +5,7 @@ import 'package:seafood_b2b_app/features/catalog/data/category_provider.dart';
 import 'package:seafood_b2b_app/features/catalog/data/product_provider.dart';
 import 'package:seafood_b2b_app/features/product/screens/product_details_screen.dart';
 import 'package:seafood_b2b_app/widgets/cart_button.dart';
+import 'package:seafood_b2b_app/widgets/shimmer_box.dart';
 
 final selectedCategoryProvider = StateProvider<Category?>((ref) => null);
 
@@ -29,7 +30,16 @@ class CatalogScreen extends ConsumerWidget {
           SizedBox(
             height: 100,
             child: categoriesAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 5,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                itemBuilder: (_, __) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: ShimmerBox(height: 60, width: 140),
+                ),
+              ),
               error: (e, _) => Center(child: Text('Ошибка категорий: $e')),
               data: (categories) {
                 if (categories.isEmpty) {
@@ -107,7 +117,20 @@ class CatalogScreen extends ConsumerWidget {
           // 🔹 Товары по выбранной категории
           Expanded(
             child: productsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => GridView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: 6,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 3 / 4,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemBuilder: (_, __) => const ShimmerBox(
+                  height: 160,
+                  width: double.infinity,
+                ),
+              ),
               error: (e, _) => Center(child: Text('Ошибка загрузки: $e')),
               data: (products) {
                 final filtered = selectedCategory == null
