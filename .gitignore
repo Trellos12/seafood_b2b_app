@@ -44,4 +44,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# ✅ DotEnv – секреты проекта
 .env
+.env.*
