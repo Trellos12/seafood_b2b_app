@@ -9,7 +9,7 @@ part of 'order_model.dart';
 _$OrderImpl _$$OrderImplFromJson(Map<String, dynamic> json) => _$OrderImpl(
       id: (json['id'] as num).toInt(),
       status: json['status'] as String,
-      total: json['total'] as String? ?? '0.0',
+      total: _toString(json['total']),
       dateCreated: json['date_created'] == null
           ? null
           : DateTime.parse(json['date_created'] as String),
@@ -33,8 +33,8 @@ _$LineItemImpl _$$LineItemImplFromJson(Map<String, dynamic> json) =>
       productId: (json['product_id'] as num).toInt(),
       name: json['name'] as String,
       quantity: (json['quantity'] as num).toInt(),
-      total: json['total'] as String? ?? '0.0',
-      price: json['price'] as String? ?? '0.0',
+      total: _toString(json['total']),
+      price: _toString(json['price']),
     );
 
 Map<String, dynamic> _$$LineItemImplToJson(_$LineItemImpl instance) =>

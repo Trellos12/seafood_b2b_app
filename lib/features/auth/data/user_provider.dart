@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
@@ -30,25 +31,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _loadToken() async {
     final token = await _secureStorage.read(key: _tokenKey);
     if (token != null) {
-      final email = _extractEmailFromToken(token);
-      state = AuthState(isAuthenticated: true, token: token, email: email);
+      // Email не декодируем — будет null, если перезапустить
+      // но для защиты заказов достаточно токена
+      state = AuthState(isAuthenticated: true, token: token);
     }
   }
 
   Future<bool> login(String email, String password) async {
     try {
-      final response = await Uri.parse(
+      final url = Uri.parse(
         'https://galileo.fish-star.com.gr/wp-json/jwt-auth/v1/token',
       );
 
-      final res = await http.post(response, body: {
+      final res = await http.post(url, body: {
         'username': email,
         'password': password,
       });
 
+      debugPrint('🔐 Ответ от сервера: ${res.statusCode}');
+      debugPrint('🔐 Тело ответа: ${res.body}');
+
       if (res.statusCode == 200) {
-        final token = jsonDecode(res.body)['token'];
-        final decodedEmail = _extractEmailFromToken(token);
+        final body = jsonDecode(res.body);
+        final token = body['data']['token'];
+        final decodedEmail = body['data']['email'];
+
+        debugPrint('✅ JWT Token: $token');
+        debugPrint('📧 Email: $decodedEmail');
 
         await _secureStorage.write(key: _tokenKey, value: token);
 
@@ -62,6 +71,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         return false;
       }
     } catch (e) {
+      debugPrint('❌ Ошибка при логине: $e');
       return false;
     }
   }
@@ -69,20 +79,5 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     await _secureStorage.delete(key: _tokenKey);
     state = AuthState(isAuthenticated: false);
-  }
-
-  String? _extractEmailFromToken(String token) {
-    try {
-      final parts = token.split('.');
-      if (parts.length != 3) return null;
-
-      final payload =
-          utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
-      final payloadMap = jsonDecode(payload);
-
-      return payloadMap['data']?['user_email'];
-    } catch (_) {
-      return null;
-    }
   }
 }

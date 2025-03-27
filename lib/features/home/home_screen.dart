@@ -28,13 +28,12 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Ваш токен:',
+                    'Ваш email:',
                     style: const TextStyle(fontSize: 16),
                   ),
                   Text(
-                    auth.token ?? '-',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    textAlign: TextAlign.center,
+                    auth.email ?? '-',
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
                   ),
                   const SizedBox(height: 32),
                   ElevatedButton(

@@ -40,9 +40,8 @@ class OrderHistoryScreen extends ConsumerWidget {
 
               return ListTile(
                 title: Text('Заказ #${order.id}'),
-                subtitle: Text(
-                  'Статус: ${order.status}\nСумма: ${order.total} €',
-                ),
+                subtitle:
+                    Text('Статус: ${order.status}\nСумма: ${order.total} €'),
                 trailing: Text(
                   formattedDate,
                   style: const TextStyle(fontSize: 12),

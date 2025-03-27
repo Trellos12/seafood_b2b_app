@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:seafood_b2b_app/features/catalog/screens/catalog_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class OrderSuccessScreen extends StatelessWidget {
   final double total;
@@ -45,15 +45,7 @@ class OrderSuccessScreen extends StatelessWidget {
                   icon: const Icon(Icons.home),
                   label: const Text('На главную'),
                   onPressed: () {
-                    Future.microtask(() {
-                      if (!context.mounted) return;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CatalogScreen(),
-                        ),
-                      );
-                    });
+                    context.go('/home');
                   },
                 ),
               ),
