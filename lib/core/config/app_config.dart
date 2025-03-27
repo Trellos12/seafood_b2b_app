@@ -1,10 +1,8 @@
-class AppConfig {
-  /// 👇 Сюда вставляй свой текущий поддомен (или основной домен в будущем)
-  static const String baseUrl = 'https://galileo.fish-star.com.gr/';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-  /// 🔐 WooCommerce REST API ключи
-  static const String consumerKey =
-      'ck_f487f9534adb1afe7dfb312266ea64dd3942a13b';
-  static const String consumerSecret =
-      'cs_80557625f02f3f6c91ef0afceb855f74c2b2da3a';
+class AppConfig {
+  /// 👇 Чтение из .env — безопасно и удобно
+  static final String baseUrl = dotenv.env['BASE_URL'] ?? '';
+  static final String consumerKey = dotenv.env['CONSUMER_KEY'] ?? '';
+  static final String consumerSecret = dotenv.env['CONSUMER_SECRET'] ?? '';
 }

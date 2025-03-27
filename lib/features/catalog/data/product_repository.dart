@@ -1,5 +1,5 @@
 import 'package:seafood_b2b_app/features/catalog/data/product_model.dart';
-import 'package:seafood_b2b_app/features/catalog/data/woocommerce_api.dart';
+import 'package:seafood_b2b_app/api/woocommerce_api.dart';
 
 class ProductRepository {
   final WooCommerceApi _api = WooCommerceApi();

@@ -8,6 +8,7 @@ import 'package:seafood_b2b_app/features/catalog/screens/catalog_screen.dart';
 import 'package:seafood_b2b_app/features/cart/screens/cart_screen.dart';
 import 'package:seafood_b2b_app/features/cart/screens/order_confirmation_screen.dart';
 import 'package:seafood_b2b_app/features/orders/screens/order_history_screen.dart'; // ✅ не забудь
+import 'package:seafood_b2b_app/features/auth/data/user_model.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
