@@ -34,6 +34,7 @@ _$LineItemImpl _$$LineItemImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       quantity: (json['quantity'] as num).toInt(),
       total: json['total'] as String? ?? '0.0',
+      price: json['price'] as String? ?? '0.0',
     );
 
 Map<String, dynamic> _$$LineItemImplToJson(_$LineItemImpl instance) =>
@@ -42,4 +43,5 @@ Map<String, dynamic> _$$LineItemImplToJson(_$LineItemImpl instance) =>
       'name': instance.name,
       'quantity': instance.quantity,
       'total': instance.total,
+      'price': instance.price,
     };

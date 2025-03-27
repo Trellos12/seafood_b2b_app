@@ -8,7 +8,7 @@ class Order with _$Order {
   const factory Order({
     required int id,
     required String status,
-    @Default('0.0') String total, // 👈 добавили значение по умолчанию
+    @Default('0.0') String total,
     @JsonKey(name: 'date_created') DateTime? dateCreated,
     @Default([]) @JsonKey(name: 'line_items') List<LineItem> items,
   }) = _Order;
@@ -22,7 +22,8 @@ class LineItem with _$LineItem {
     @JsonKey(name: 'product_id') required int productId,
     required String name,
     required int quantity,
-    @Default('0.0') String total, // 👈 безопасное значение
+    @Default('0.0') String total,
+    @Default('0.0') String price, // ✅ добавлено
   }) = _LineItem;
 
   factory LineItem.fromJson(Map<String, dynamic> json) =>
