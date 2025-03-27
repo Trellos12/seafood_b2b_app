@@ -13,10 +13,7 @@ class CartScreen extends ConsumerWidget {
     final cart = ref.watch(cartProvider);
     final cartNotifier = ref.read(cartProvider.notifier);
 
-    final total = cart.fold<double>(
-      0,
-      (sum, item) => sum + item.quantity * item.product.price,
-    );
+    final total = cartNotifier.totalAmount;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,39 +32,49 @@ class CartScreen extends ConsumerWidget {
                     itemCount: cart.length,
                     itemBuilder: (context, index) {
                       final item = cart[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          leading: Image.network(
-                            item.product.imageUrl,
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                          ),
-                          title: Text(item.product.name),
-                          subtitle: Text(
-                            '${item.product.price.toStringAsFixed(2)} € × ${item.quantity}',
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove),
-                                onPressed: () => cartNotifier
-                                    .decreaseQuantity(item.product.id),
-                              ),
-                              Text('${item.quantity}'),
-                              IconButton(
-                                icon: const Icon(Icons.add),
-                                onPressed: () => cartNotifier
-                                    .increaseQuantity(item.product.id),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete_outline),
-                                onPressed: () => cartNotifier
-                                    .removeFromCart(item.product.id),
-                              ),
-                            ],
+
+                      return Dismissible(
+                        key: ValueKey(item.product.id),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        onDismissed: (_) =>
+                            cartNotifier.removeFromCart(item.product.id),
+                        child: Card(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ListTile(
+                            leading: Image.network(
+                              item.product.imageUrl,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.image_not_supported),
+                            ),
+                            title: Text(item.product.name),
+                            subtitle: Text(
+                              '${item.product.price.toStringAsFixed(2)} € × ${item.quantity}',
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove),
+                                  onPressed: () => cartNotifier
+                                      .decreaseQuantity(item.product.id),
+                                ),
+                                Text('${item.quantity}'),
+                                IconButton(
+                                  icon: const Icon(Icons.add),
+                                  onPressed: () => cartNotifier
+                                      .increaseQuantity(item.product.id),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -86,6 +93,7 @@ class CartScreen extends ConsumerWidget {
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.right,
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
@@ -104,8 +112,7 @@ class CartScreen extends ConsumerWidget {
                         icon: const Icon(Icons.arrow_back),
                         label: const Text('Продолжить покупки'),
                         onPressed: () {
-                          context.go(
-                              '/'); // ✅ безопасный возврат на каталог/главную
+                          context.go('/');
                         },
                       ),
                     ],
