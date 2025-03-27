@@ -21,6 +21,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   static const _keyFullName = 'user_full_name';
   static const _keyEmail = 'user_email';
 
+  bool _isSubmitting = false;
+
   @override
   void initState() {
     super.initState();
@@ -74,14 +76,18 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Имя и фамилия'),
-                validator: (value) => value == null || value.trim().isEmpty
-                    ? 'Введите имя'
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.name],
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? 'Введите имя и фамилию'
                     : null,
               ),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                autofillHints: const [AutofillHints.email],
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Введите email';
@@ -97,10 +103,15 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 controller: _phoneController,
                 decoration: const InputDecoration(labelText: 'Телефон'),
                 keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.telephoneNumber],
                 validator: (value) {
                   final phoneRegex = RegExp(r'^\+?\d{8,15}$');
-                  if (value == null || !phoneRegex.hasMatch(value.trim())) {
-                    return 'Введите корректный номер (8–15 цифр, с + или без)';
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Введите номер телефона';
+                  }
+                  if (!phoneRegex.hasMatch(value.trim())) {
+                    return 'Введите корректный номер (8–15 цифр)';
                   }
                   return null;
                 },
@@ -113,48 +124,58 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () async {
-                  if (!_formKey.currentState!.validate()) return;
+                onPressed: _isSubmitting
+                    ? null
+                    : () async {
+                        if (!_formKey.currentState!.validate()) return;
 
-                  final fullName = _nameController.text.trim();
-                  final email = _emailController.text.trim();
-                  final phone = _phoneController.text.trim();
+                        setState(() => _isSubmitting = true);
 
-                  final parts = fullName.split(' ');
-                  final firstName = parts.isNotEmpty ? parts.first : '';
-                  final lastName =
-                      parts.length > 1 ? parts.sublist(1).join(' ') : '';
+                        final fullName = _nameController.text.trim();
+                        final email = _emailController.text.trim();
+                        final phone = _phoneController.text.trim();
 
-                  await _saveUserData(fullName, email);
+                        final parts = fullName.split(' ');
+                        final firstName = parts.isNotEmpty ? parts.first : '';
+                        final lastName =
+                            parts.length > 1 ? parts.sublist(1).join(' ') : '';
 
-                  try {
-                    final order = await OrderRepository().createOrder(
-                      cart,
-                      billing: {
-                        'first_name': firstName,
-                        'last_name': lastName,
-                        'email': email,
-                        'phone': phone,
+                        await _saveUserData(fullName, email);
+
+                        try {
+                          final order = await OrderRepository().createOrder(
+                            cart,
+                            billing: {
+                              'first_name': firstName,
+                              'last_name': lastName,
+                              'email': email,
+                              'phone': phone,
+                            },
+                          );
+                          final orderId = order['id'];
+                          cartNotifier.clearCart();
+
+                          if (!mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => OrderSuccessScreen(
+                                total: total,
+                                orderId: orderId,
+                              ),
+                            ),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Ошибка при заказе: ${e.toString()}'),
+                            ),
+                          );
+                        } finally {
+                          setState(() => _isSubmitting = false);
+                        }
                       },
-                    );
-                    final orderId = order['id'];
-                    cartNotifier.clearCart();
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => OrderSuccessScreen(
-                          total: total,
-                          orderId: orderId,
-                        ),
-                      ),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Ошибка при заказе: $e')),
-                    );
-                  }
-                },
                 child: const Text('Подтвердить заказ'),
               ),
             ],
