@@ -44,5 +44,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# 🔐 Ignore secrets
-lib/secrets.dart
+# ✅ DotEnv – секреты проекта
+.env
+.env.*
