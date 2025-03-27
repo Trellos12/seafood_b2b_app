@@ -10,7 +10,8 @@ class Product with _$Product {
     required String name,
     required String imageUrl,
     required double price,
-    required List<String> categoryIds, // ✅ заменили categoryId → categoryIds
+    required List<String> categoryIds,
+    String? description, // ✅ добавлено
   }) = _Product;
 
   factory Product.fromJson(Map<String, dynamic> json) =>
@@ -27,6 +28,7 @@ class Product with _$Product {
       categoryIds: (json['categories'] as List)
           .map((cat) => cat['id'].toString())
           .toList(),
+      description: json['description'], // ✅ добавлено
     );
   }
 }
