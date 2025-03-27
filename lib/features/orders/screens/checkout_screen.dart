@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:seafood_b2b_app/features/cart/data/cart_provider.dart';
 import 'package:seafood_b2b_app/features/orders/data/order_repository.dart';
-import 'package:seafood_b2b_app/features/cart/screens/order_success_screen.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
   const CheckoutScreen({super.key});
@@ -152,19 +152,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                               'phone': phone,
                             },
                           );
-                          final orderId = order['id'];
+
                           cartNotifier.clearCart();
 
                           if (!mounted) return;
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => OrderSuccessScreen(
-                                total: total,
-                                orderId: orderId,
-                              ),
-                            ),
-                          );
+
+                          /// 👇 Переход на Главную с очисткой стека
+                          context.go('/home');
                         } catch (e) {
                           if (!mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
