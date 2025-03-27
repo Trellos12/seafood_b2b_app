@@ -12,15 +12,13 @@ class OrderHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authProvider);
 
-    if (!auth.isAuthenticated) {
+    if (!auth.isAuthenticated || auth.email == null) {
       return const Scaffold(
         body: Center(child: Text('Пользователь не авторизован')),
       );
     }
 
-    // TODO: вытащить email из JWT или получать из API
-    final ordersAsync =
-        ref.watch(orderListProvider("test@b2b.com")); // временно
+    final ordersAsync = ref.watch(orderListProvider(auth.email!));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Мои заказы')),
