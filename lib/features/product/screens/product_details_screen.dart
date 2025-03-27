@@ -18,35 +18,38 @@ class ProductDetailsScreen extends ConsumerWidget {
         title: Text(product.name),
         actions: const [CartButton()],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ProductImage(
-              imageUrl: product.imageUrl,
-              heroTag: 'product-image-${product.id}',
-            ),
-            const SizedBox(height: 16),
-            Text(
-              product.name,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            ProductPriceText(price: product.price),
-            const SizedBox(height: 16),
-            ProductBuySection(product: product),
-            const SizedBox(height: 24),
-            if (product.description != null &&
-                product.description!.isNotEmpty) ...[
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Hero(
+                tag: 'product-image-${product.id}',
+                child: ProductImage(imageUrl: product.imageUrl),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                product.name,
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 8),
+              ProductPriceText(price: product.price),
+              const SizedBox(height: 16),
+              ProductBuySection(product: product),
+              const SizedBox(height: 24),
               Text(
                 'Описание',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              Text(product.description!),
+              Text(
+                (product.description ?? 'Описание недоступно').trim(),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 32),
             ],
-          ],
+          ),
         ),
       ),
     );
