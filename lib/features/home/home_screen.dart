@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
+import 'package:seafood_b2b_app/features/catalog/screens/catalog_screen.dart';
+import 'package:seafood_b2b_app/features/orders/screens/order_history_screen.dart';
+import 'package:seafood_b2b_app/features/profile/screens/profile_screen.dart';
 import 'package:seafood_b2b_app/widgets/cart_button.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -18,7 +20,12 @@ class HomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.person),
             tooltip: 'Профиль',
-            onPressed: () => context.push('/profile'),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              );
+            },
           ),
           const CartButton(),
         ],
@@ -34,10 +41,7 @@ class HomeScreen extends ConsumerWidget {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Ваш email:',
-                    style: const TextStyle(fontSize: 16),
-                  ),
+                  const Text('Ваш email:', style: TextStyle(fontSize: 16)),
                   Text(
                     auth.email ?? '-',
                     style: const TextStyle(fontSize: 14, color: Colors.black87),
@@ -45,14 +49,24 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: () {
-                      context.go('/catalog');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const CatalogScreen(),
+                        ),
+                      );
                     },
                     child: const Text('Перейти в каталог'),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.go('/order-history');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const OrderHistoryScreen(),
+                        ),
+                      );
                     },
                     child: const Text('История заказов'),
                   ),
@@ -60,7 +74,11 @@ class HomeScreen extends ConsumerWidget {
                   ElevatedButton(
                     onPressed: () async {
                       await ref.read(authProvider.notifier).logout();
-                      context.go('/');
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => const HomeScreen(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
