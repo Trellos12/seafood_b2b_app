@@ -22,7 +22,10 @@ class CartScreen extends ConsumerWidget {
       ),
       body: cart.isEmpty
           ? const Center(
-              child: Text('Корзина пуста', style: TextStyle(fontSize: 18)),
+              child: Text(
+                'Корзина пуста',
+                style: TextStyle(fontSize: 18),
+              ),
             )
           : Column(
               children: [
@@ -46,14 +49,21 @@ class CartScreen extends ConsumerWidget {
                             cartNotifier.removeFromCart(item.product.id),
                         child: Card(
                           margin: const EdgeInsets.only(bottom: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
                           child: ListTile(
-                            leading: Image.network(
-                              item.product.imageUrl,
-                              width: 48,
-                              height: 48,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.image_not_supported),
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                item.product.imageUrl,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.image_not_supported),
+                              ),
                             ),
                             title: Text(item.product.name),
                             subtitle: Text(
@@ -96,16 +106,19 @@ class CartScreen extends ConsumerWidget {
                         textAlign: TextAlign.right,
                       ),
                       const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const CheckoutScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text('Оформить заказ'),
+                      SizedBox(
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const CheckoutScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text('Оформить заказ'),
+                        ),
                       ),
                       const SizedBox(height: 8),
                       TextButton.icon(

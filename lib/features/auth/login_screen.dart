@@ -50,43 +50,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Вход')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Введите email';
-                  }
-                  final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                  if (!emailRegExp.hasMatch(value.trim())) {
-                    return 'Неверный формат email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Пароль'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Введите пароль' : null,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _loading ? null : _submit,
-                child: _loading
-                    ? const CircularProgressIndicator()
-                    : const Text('Войти'),
-              ),
-            ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Введите email';
+                    }
+                    final emailRegExp = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                    if (!emailRegExp.hasMatch(value.trim())) {
+                      return 'Неверный формат email';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Пароль',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Введите пароль' : null,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _submit,
+                    child: _loading
+                        ? const CircularProgressIndicator()
+                        : const Text('Войти'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
