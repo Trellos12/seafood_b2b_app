@@ -14,7 +14,14 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Главная'),
-        actions: const [CartButton()],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            tooltip: 'Профиль',
+            onPressed: () => context.push('/profile'),
+          ),
+          const CartButton(),
+        ],
       ),
       body: Center(
         child: !auth.isAuthenticated

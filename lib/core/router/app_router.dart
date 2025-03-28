@@ -11,6 +11,9 @@ import 'package:seafood_b2b_app/features/cart/screens/cart_screen.dart';
 import 'package:seafood_b2b_app/features/cart/screens/order_confirmation_screen.dart';
 import 'package:seafood_b2b_app/features/orders/screens/order_history_screen.dart';
 
+import 'package:seafood_b2b_app/features/profile/screens/profile_screen.dart';
+import 'package:seafood_b2b_app/features/profile/screens/change_password_screen.dart';
+
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
@@ -58,6 +61,14 @@ class AppRouter {
         GoRoute(
           path: '/order-history',
           builder: (context, state) => const OrderHistoryScreen(),
+        ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: '/change-password',
+          builder: (context, state) => const ChangePasswordScreen(),
         ),
       ],
     );
