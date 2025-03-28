@@ -8,38 +8,47 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final auth = ref.watch(authProvider);
-    final email = auth.email ?? '-';
+    final user = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Профиль')),
+      appBar: AppBar(
+        title: const Text('Профиль'),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Email: $email',
-                style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => context.push('/change-password'),
-                child: const Text('Сменить пароль'),
-              ),
+            const Text(
+              'Добро пожаловать!',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () async {
-                  await ref.read(authProvider.notifier).logout();
-                  if (context.mounted) {
-                    context.go('/');
-                  }
-                },
-                child: const Text('Выйти'),
+            const SizedBox(height: 12),
+            if (user.email != null)
+              Text(
+                '📧 Email: ${user.email}',
+                style: const TextStyle(fontSize: 16),
               ),
+            const SizedBox(height: 32),
+            ListTile(
+              leading: const Icon(Icons.lock_reset),
+              title: const Text('Сменить пароль'),
+              onTap: () {
+                context.push('/change-password');
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('Выйти'),
+              textColor: Colors.red,
+              iconColor: Colors.red,
+              onTap: () async {
+                await ref.read(authProvider.notifier).logout();
+                if (context.mounted) {
+                  context.go('/');
+                }
+              },
             ),
           ],
         ),
