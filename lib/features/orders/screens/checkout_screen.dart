@@ -78,7 +78,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 decoration: const InputDecoration(labelText: 'Имя и фамилия'),
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.name],
-                validator: (value) => (value == null || value.trim().isEmpty)
+                validator: (value) => value == null || value.trim().isEmpty
                     ? 'Введите имя и фамилию'
                     : null,
               ),
@@ -143,7 +143,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         await _saveUserData(fullName, email);
 
                         try {
-                          final order = await OrderRepository().createOrder(
+                          await OrderRepository().createOrder(
                             cart,
                             billing: {
                               'first_name': firstName,
@@ -155,20 +155,19 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
                           cartNotifier.clearCart();
 
-                          if (!mounted) return;
-
-                          /// 👇 Переход на Главную с очисткой стека
+                          if (!context.mounted) return;
                           context.go('/home');
                         } catch (e) {
-                          if (!mounted) return;
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                                  Text('Ошибка при заказе: ${e.toString()}'),
+                              content: Text(
+                                'Ошибка при заказе: ${e.toString()}',
+                              ),
                             ),
                           );
                         } finally {
-                          if (mounted) {
+                          if (context.mounted) {
                             setState(() => _isSubmitting = false);
                           }
                         }
