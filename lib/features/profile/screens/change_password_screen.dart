@@ -59,37 +59,51 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Смена пароля')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Вы вошли как: $email'),
-              const SizedBox(height: 24),
-              TextFormField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Новый пароль'),
-                validator: (value) {
-                  if (value == null || value.length < 6) {
-                    return 'Минимум 6 символов';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _changePassword,
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Сменить пароль'),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Вы вошли как:',
+                    style: Theme.of(context).textTheme.bodySmall),
+                const SizedBox(height: 4),
+                Text(email, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Новый пароль',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.length < 6) {
+                      return 'Минимум 6 символов';
+                    }
+                    return null;
+                  },
                 ),
-              )
-            ],
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: _isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : ElevatedButton(
+                            key: const ValueKey('submit_button'),
+                            onPressed: _changePassword,
+                            child: const Text('Сменить пароль'),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
