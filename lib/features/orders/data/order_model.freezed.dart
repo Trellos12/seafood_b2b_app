@@ -22,8 +22,9 @@ Order _$OrderFromJson(Map<String, dynamic> json) {
 mixin _$Order {
   int get id => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _toString)
   String get total =>
-      throw _privateConstructorUsedError; // 👈 добавили значение по умолчанию
+      throw _privateConstructorUsedError; // ✅ required добавлено
   @JsonKey(name: 'date_created')
   DateTime? get dateCreated => throw _privateConstructorUsedError;
   @JsonKey(name: 'line_items')
@@ -46,7 +47,7 @@ abstract class $OrderCopyWith<$Res> {
   $Res call(
       {int id,
       String status,
-      String total,
+      @JsonKey(fromJson: _toString) String total,
       @JsonKey(name: 'date_created') DateTime? dateCreated,
       @JsonKey(name: 'line_items') List<LineItem> items});
 }
@@ -107,7 +108,7 @@ abstract class _$$OrderImplCopyWith<$Res> implements $OrderCopyWith<$Res> {
   $Res call(
       {int id,
       String status,
-      String total,
+      @JsonKey(fromJson: _toString) String total,
       @JsonKey(name: 'date_created') DateTime? dateCreated,
       @JsonKey(name: 'line_items') List<LineItem> items});
 }
@@ -162,7 +163,7 @@ class _$OrderImpl implements _Order {
   const _$OrderImpl(
       {required this.id,
       required this.status,
-      this.total = '0.0',
+      @JsonKey(fromJson: _toString) required this.total,
       @JsonKey(name: 'date_created') this.dateCreated,
       @JsonKey(name: 'line_items') final List<LineItem> items = const []})
       : _items = items;
@@ -175,9 +176,9 @@ class _$OrderImpl implements _Order {
   @override
   final String status;
   @override
-  @JsonKey()
+  @JsonKey(fromJson: _toString)
   final String total;
-// 👈 добавили значение по умолчанию
+// ✅ required добавлено
   @override
   @JsonKey(name: 'date_created')
   final DateTime? dateCreated;
@@ -233,7 +234,7 @@ abstract class _Order implements Order {
   const factory _Order(
       {required final int id,
       required final String status,
-      final String total,
+      @JsonKey(fromJson: _toString) required final String total,
       @JsonKey(name: 'date_created') final DateTime? dateCreated,
       @JsonKey(name: 'line_items') final List<LineItem> items}) = _$OrderImpl;
 
@@ -244,7 +245,8 @@ abstract class _Order implements Order {
   @override
   String get status;
   @override
-  String get total; // 👈 добавили значение по умолчанию
+  @JsonKey(fromJson: _toString)
+  String get total; // ✅ required добавлено
   @override
   @JsonKey(name: 'date_created')
   DateTime? get dateCreated;
@@ -270,7 +272,11 @@ mixin _$LineItem {
   int get productId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   int get quantity => throw _privateConstructorUsedError;
-  String get total => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _toString)
+  String get total =>
+      throw _privateConstructorUsedError; // ✅ required добавлено
+  @JsonKey(fromJson: _toString)
+  String get price => throw _privateConstructorUsedError;
 
   /// Serializes this LineItem to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -291,7 +297,8 @@ abstract class $LineItemCopyWith<$Res> {
       {@JsonKey(name: 'product_id') int productId,
       String name,
       int quantity,
-      String total});
+      @JsonKey(fromJson: _toString) String total,
+      @JsonKey(fromJson: _toString) String price});
 }
 
 /// @nodoc
@@ -313,6 +320,7 @@ class _$LineItemCopyWithImpl<$Res, $Val extends LineItem>
     Object? name = null,
     Object? quantity = null,
     Object? total = null,
+    Object? price = null,
   }) {
     return _then(_value.copyWith(
       productId: null == productId
@@ -331,6 +339,10 @@ class _$LineItemCopyWithImpl<$Res, $Val extends LineItem>
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as String,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -347,7 +359,8 @@ abstract class _$$LineItemImplCopyWith<$Res>
       {@JsonKey(name: 'product_id') int productId,
       String name,
       int quantity,
-      String total});
+      @JsonKey(fromJson: _toString) String total,
+      @JsonKey(fromJson: _toString) String price});
 }
 
 /// @nodoc
@@ -367,6 +380,7 @@ class __$$LineItemImplCopyWithImpl<$Res>
     Object? name = null,
     Object? quantity = null,
     Object? total = null,
+    Object? price = null,
   }) {
     return _then(_$LineItemImpl(
       productId: null == productId
@@ -385,6 +399,10 @@ class __$$LineItemImplCopyWithImpl<$Res>
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as String,
+      price: null == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -396,7 +414,8 @@ class _$LineItemImpl implements _LineItem {
       {@JsonKey(name: 'product_id') required this.productId,
       required this.name,
       required this.quantity,
-      this.total = '0.0'});
+      @JsonKey(fromJson: _toString) required this.total,
+      @JsonKey(fromJson: _toString) required this.price});
 
   factory _$LineItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$LineItemImplFromJson(json);
@@ -409,12 +428,16 @@ class _$LineItemImpl implements _LineItem {
   @override
   final int quantity;
   @override
-  @JsonKey()
+  @JsonKey(fromJson: _toString)
   final String total;
+// ✅ required добавлено
+  @override
+  @JsonKey(fromJson: _toString)
+  final String price;
 
   @override
   String toString() {
-    return 'LineItem(productId: $productId, name: $name, quantity: $quantity, total: $total)';
+    return 'LineItem(productId: $productId, name: $name, quantity: $quantity, total: $total, price: $price)';
   }
 
   @override
@@ -427,13 +450,14 @@ class _$LineItemImpl implements _LineItem {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.quantity, quantity) ||
                 other.quantity == quantity) &&
-            (identical(other.total, total) || other.total == total));
+            (identical(other.total, total) || other.total == total) &&
+            (identical(other.price, price) || other.price == price));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, productId, name, quantity, total);
+      Object.hash(runtimeType, productId, name, quantity, total, price);
 
   /// Create a copy of LineItem
   /// with the given fields replaced by the non-null parameter values.
@@ -453,10 +477,12 @@ class _$LineItemImpl implements _LineItem {
 
 abstract class _LineItem implements LineItem {
   const factory _LineItem(
-      {@JsonKey(name: 'product_id') required final int productId,
-      required final String name,
-      required final int quantity,
-      final String total}) = _$LineItemImpl;
+          {@JsonKey(name: 'product_id') required final int productId,
+          required final String name,
+          required final int quantity,
+          @JsonKey(fromJson: _toString) required final String total,
+          @JsonKey(fromJson: _toString) required final String price}) =
+      _$LineItemImpl;
 
   factory _LineItem.fromJson(Map<String, dynamic> json) =
       _$LineItemImpl.fromJson;
@@ -469,7 +495,11 @@ abstract class _LineItem implements LineItem {
   @override
   int get quantity;
   @override
-  String get total;
+  @JsonKey(fromJson: _toString)
+  String get total; // ✅ required добавлено
+  @override
+  @JsonKey(fromJson: _toString)
+  String get price;
 
   /// Create a copy of LineItem
   /// with the given fields replaced by the non-null parameter values.

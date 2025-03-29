@@ -5,7 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'cart_item_model.dart';
 
 final cartProvider = StateNotifierProvider<CartNotifier, List<CartItem>>((ref) {
-  return CartNotifier();
+  final notifier = CartNotifier();
+  notifier.init(); // автоматическая загрузка корзины при старте
+  return notifier;
 });
 
 class CartNotifier extends StateNotifier<List<CartItem>> {
@@ -13,19 +15,16 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
 
   static const _storageKey = 'cart_items';
 
-  Future<void> _saveCartToStorage() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonList = state.map((item) => item.toJson()).toList();
-    await prefs.setString(_storageKey, jsonEncode(jsonList));
-  }
-
-  Future<void> _loadCartFromStorage() async {
+  /// 📦 Инициализация при старте
+  Future<void> init() async {
+    debugPrint('🛒 Загрузка корзины из памяти...');
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_storageKey);
     if (jsonString != null) {
       try {
         final List decoded = jsonDecode(jsonString);
         state = decoded.map((item) => CartItem.fromJson(item)).toList();
+        debugPrint('✅ Корзина восстановлена: ${state.length} товаров');
       } catch (e) {
         debugPrint('❌ Ошибка загрузки корзины: $e');
         state = [];
@@ -34,45 +33,28 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
     }
   }
 
-  /// 🔄 Вызывается вручную из HomeScreen
-  Future<void> restoreFromStorage() async {
-    await _loadCartFromStorage();
-    await _saveCartToStorage(); // ⬅️ сохраняем восстановленную корзину
-  }
-
-  Future<void> clearStorage() async {
+  /// 💾 Сохранение в память
+  Future<void> _persist() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_storageKey);
-    state = [];
+    final jsonList = state.map((item) => item.toJson()).toList();
+    await prefs.setString(_storageKey, jsonEncode(jsonList));
   }
 
+  /// ➕ Добавить товар
   void addToCart(CartItem item) {
-    debugPrint('🛒 Добавляем товар: ${item.product.name}');
-
     final index = state.indexWhere((e) => e.product.id == item.product.id);
     if (index == -1) {
       state = [...state, item];
     } else {
       final updated = [...state];
-      updated[index] = updated[index].copyWith(
-        quantity: updated[index].quantity + 1,
-      );
-      state = updated;
-    }
-    _saveCartToStorage();
-  }
-
-  void increaseQuantity(String productId) {
-    final updated = [...state];
-    final index = updated.indexWhere((e) => e.product.id == productId);
-    if (index != -1) {
       updated[index] =
           updated[index].copyWith(quantity: updated[index].quantity + 1);
       state = updated;
-      _saveCartToStorage();
     }
+    _persist();
   }
 
+  /// ➖ Уменьшить количество
   void decreaseQuantity(String productId) {
     final updated = [...state];
     final index = updated.indexWhere((e) => e.product.id == productId);
@@ -80,19 +62,39 @@ class CartNotifier extends StateNotifier<List<CartItem>> {
       updated[index] =
           updated[index].copyWith(quantity: updated[index].quantity - 1);
       state = updated;
-      _saveCartToStorage();
     } else {
       removeFromCart(productId);
     }
+    _persist();
   }
 
+  /// ➕ Увеличить количество
+  void increaseQuantity(String productId) {
+    final updated = [...state];
+    final index = updated.indexWhere((e) => e.product.id == productId);
+    if (index != -1) {
+      updated[index] =
+          updated[index].copyWith(quantity: updated[index].quantity + 1);
+      state = updated;
+    }
+    _persist();
+  }
+
+  /// ❌ Удалить товар
   void removeFromCart(String productId) {
     state = state.where((e) => e.product.id != productId).toList();
-    _saveCartToStorage();
+    _persist();
   }
 
+  /// 🗑 Очистить корзину
   void clearCart() {
     state = [];
-    _saveCartToStorage();
+    _persist();
+  }
+
+  /// 💰 Сумма заказа
+  double get totalAmount {
+    return state.fold(
+        0, (sum, item) => sum + item.quantity * item.product.price);
   }
 }

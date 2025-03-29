@@ -1,0 +1,13 @@
+{
+    "catalog": "Catalog",
+    "checkout": "Checkout",
+    "confirm_order": "Confirm Order",
+    "total": "Total",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "enter_name": "Enter your name",
+    "enter_email": "Enter your email",
+    "enter_phone": "Enter a valid phone number"
+  }
+  

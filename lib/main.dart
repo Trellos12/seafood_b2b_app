@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:seafood_b2b_app/core/router/app_router.dart'; // ✅ правильный путь
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
-}
+import 'package:seafood_b2b_app/app.dart'; // 👈 ВАЖНО!
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  await EasyLocalization.ensureInitialized();
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = AppRouter(ref).config;
-
-    return MaterialApp.router(
-      title: 'Seafood B2B',
-      routerConfig: router,
-    );
-  }
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('ru'), Locale('el')],
+      path: 'assets/langs',
+      fallbackLocale: const Locale('en'),
+      child: const ProviderScope(child: MyApp()),
+    ),
+  );
 }

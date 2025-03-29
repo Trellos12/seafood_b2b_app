@@ -24,20 +24,32 @@ class OrderDetailsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Статус: ${order.status}'),
             const SizedBox(height: 8),
-            Text('Сумма: ${order.total} €'),
+            Text('Сумма заказа: ${order.total} €',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             const Text('Товары:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 8),
             Expanded(
-              child: ListView.builder(
+              child: ListView.separated(
                 itemCount: order.items.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = order.items[index];
-                  return ListTile(
-                    title: Text(item.name),
-                    subtitle: Text('Количество: ${item.quantity}'),
-                    trailing: Text('${item.total} €'),
+                  final unitPrice = double.tryParse(item.price) ?? 0;
+                  final totalPrice = double.tryParse(item.total) ?? 0;
+
+                  return Card(
+                    child: ListTile(
+                      title: Text(item.name),
+                      subtitle: Text(
+                        'Цена: ${unitPrice.toStringAsFixed(2)} € × ${item.quantity}',
+                      ),
+                      trailing: Text(
+                        '${totalPrice.toStringAsFixed(2)} €',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   );
                 },
               ),

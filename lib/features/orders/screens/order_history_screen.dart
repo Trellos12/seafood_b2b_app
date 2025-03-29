@@ -3,22 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:seafood_b2b_app/features/auth/data/user_provider.dart';
 import 'package:seafood_b2b_app/features/orders/data/order_provider.dart';
-import 'package:seafood_b2b_app/features/orders/screens/order_details_screen.dart'; // 👈 импорт экрана
+import 'package:seafood_b2b_app/features/orders/screens/order_details_screen.dart';
 
 class OrderHistoryScreen extends ConsumerWidget {
   const OrderHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final auth = ref.watch(authProvider);
 
-    if (user == null) {
+    if (!auth.isAuthenticated || auth.email == null) {
       return const Scaffold(
         body: Center(child: Text('Пользователь не авторизован')),
       );
     }
 
-    final ordersAsync = ref.watch(orderListProvider(user.email));
+    final ordersAsync = ref.watch(orderListProvider(auth.email!));
 
     return Scaffold(
       appBar: AppBar(title: const Text('Мои заказы')),

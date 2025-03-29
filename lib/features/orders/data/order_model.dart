@@ -8,7 +8,7 @@ class Order with _$Order {
   const factory Order({
     required int id,
     required String status,
-    @Default('0.0') String total, // 👈 добавили значение по умолчанию
+    @JsonKey(fromJson: _toString) required String total, // ✅ required добавлено
     @JsonKey(name: 'date_created') DateTime? dateCreated,
     @Default([]) @JsonKey(name: 'line_items') List<LineItem> items,
   }) = _Order;
@@ -22,9 +22,13 @@ class LineItem with _$LineItem {
     @JsonKey(name: 'product_id') required int productId,
     required String name,
     required int quantity,
-    @Default('0.0') String total, // 👈 безопасное значение
+    @JsonKey(fromJson: _toString) required String total, // ✅ required добавлено
+    @JsonKey(fromJson: _toString) required String price, // ✅ required добавлено
   }) = _LineItem;
 
   factory LineItem.fromJson(Map<String, dynamic> json) =>
       _$LineItemFromJson(json);
 }
+
+// 🔧 Универсальный конвертер
+String _toString(dynamic value) => value?.toString() ?? '0.0';
